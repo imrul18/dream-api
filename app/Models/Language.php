@@ -14,4 +14,13 @@ class Language extends Model
         'name',
         'status'
     ];
+
+    protected $appends = [
+        'current_status'
+    ];
+
+    public function getCurrentStatusAttribute()
+    {
+        return $this->status ? 'Active' : 'Inactive';
+    }
 }
