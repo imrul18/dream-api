@@ -35,4 +35,9 @@ class Label extends Model
             3 => 'Rejected',
         ];
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

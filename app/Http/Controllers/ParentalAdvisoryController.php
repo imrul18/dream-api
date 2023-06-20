@@ -16,7 +16,7 @@ class ParentalAdvisoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required',
+            'name' => 'required',
         ]);
         $data = $request->only([
             'name'
@@ -35,6 +35,9 @@ class ParentalAdvisoryController extends Controller
 
     public function update(Request $request, string $id)
     {
+        $request->validate([
+            'name' => 'required',
+        ]);
         $res = ParentalAdvisory::find($id);
         $data = $request->only([
             'name',

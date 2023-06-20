@@ -16,7 +16,7 @@ class Artist extends Model
         'spotify_url',
         'apple_url',
         'facebook_url',
-        'instragram_url',
+        'instagram_url',
         'youtube_url',
         'status',
     ];
@@ -37,5 +37,10 @@ class Artist extends Model
             2 => 'Approved',
             3 => 'Rejected',
         ];
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

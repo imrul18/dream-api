@@ -9,6 +9,8 @@ use App\Http\Controllers\LabelController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\OptionController;
 use App\Http\Controllers\ParentalAdvisoryController;
+use App\Http\Controllers\SubGenreController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,11 +26,19 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/admin/login', [AuthController::class, 'login']);
+Route::post('/admin/login', [AuthController::class, 'adminLogin']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('admin')->group(function () {
         Route::middleware('admin')->group(function () {
+            Route::prefix('user')->group(function () {
+                Route::controller(UserController::class)->group(function () {
+                    Route::get('', 'index');
+                    Route::post('', 'store');
+                    Route::get('/{id}', 'show');
+                    Route::post('/{id}', 'update');
+                });
+            });
             Route::prefix('artist')->group(function () {
                 Route::controller(ArtistController::class)->group(function () {
                     Route::get('', 'index');
@@ -37,7 +47,6 @@ Route::middleware('auth:sanctum')->group(function () {
                     Route::post('/{id}', 'update');
                 });
             });
-
             Route::prefix('language')->group(function () {
                 Route::controller(LanguageController::class)->group(function () {
                     Route::get('', 'index');
@@ -46,7 +55,6 @@ Route::middleware('auth:sanctum')->group(function () {
                     Route::post('/{id}', 'update');
                 });
             });
-
             Route::prefix('genre')->group(function () {
                 Route::controller(GenreController::class)->group(function () {
                     Route::get('', 'index');
@@ -55,16 +63,14 @@ Route::middleware('auth:sanctum')->group(function () {
                     Route::post('/{id}', 'update');
                 });
             });
-
             Route::prefix('sub-genre')->group(function () {
-                Route::controller(GenreController::class)->group(function () {
+                Route::controller(SubGenreController::class)->group(function () {
                     Route::get('', 'index');
                     Route::post('', 'store');
                     Route::get('/{id}', 'show');
                     Route::post('/{id}', 'update');
                 });
             });
-
             Route::prefix('label')->group(function () {
                 Route::controller(LabelController::class)->group(function () {
                     Route::get('', 'index');
@@ -73,7 +79,6 @@ Route::middleware('auth:sanctum')->group(function () {
                     Route::post('/{id}', 'update');
                 });
             });
-
             Route::prefix('format')->group(function () {
                 Route::controller(FormatController::class)->group(function () {
                     Route::get('', 'index');
@@ -82,7 +87,6 @@ Route::middleware('auth:sanctum')->group(function () {
                     Route::post('/{id}', 'update');
                 });
             });
-
             Route::prefix('parental-advisory')->group(function () {
                 Route::controller(ParentalAdvisoryController::class)->group(function () {
                     Route::get('', 'index');
@@ -91,8 +95,13 @@ Route::middleware('auth:sanctum')->group(function () {
                     Route::post('/{id}', 'update');
                 });
             });
-
             Route::post('audio/{id}', [AudioController::class, 'update']);
+            Route::prefix('option')->group(function () {
+                Route::controller(OptionController::class)->group(function () {
+                    Route::get('user', 'user');
+                    Route::get('genre', 'genre');
+                });
+            });
         });
     });
 
@@ -105,7 +114,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('rejected-audio', 'rejected');
         Route::get('caller-tune-audio', 'callerTune');
     });
-
     Route::prefix('artist')->group(function () {
         Route::controller(ArtistController::class)->group(function () {
             Route::get('', 'userIndex');
@@ -120,7 +128,6 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/{id}', 'userUpdate');
         });
     });
-
     Route::prefix('option')->group(function () {
         Route::controller(OptionController::class)->group(function () {
             Route::get('artist', 'artist');

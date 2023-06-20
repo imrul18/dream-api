@@ -16,6 +16,15 @@ class Subgenre extends Model
         'status'
     ];
 
+    protected $appends = [
+        'current_status'
+    ];
+
+    public function getCurrentStatusAttribute()
+    {
+        return $this->status ? 'Active' : 'Inactive';
+    }
+
     public function genre()
     {
         return $this->belongsTo(Genre::class);

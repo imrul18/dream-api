@@ -9,16 +9,21 @@ class SubGenreController extends Controller
 {
     public function index(Request $request)
     {
-        $res = Subgenre::where('name', 'like', '%' . $request->q . '%')->paginate($request->get('perPage', 10));
+        $res = Subgenre::with('genre')->where('name', 'like', '%' . $request->q . '%')->paginate($request->get('perPage', 10));
         return response()->json($res, 200);
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required',
+            'genre_id' => 'required',
+            'name' => 'required',
+        ], [
+            'genre_id.required' => 'Genre is required',
         ]);
+
         $data = $request->only([
+            'genre_id',
             'name'
         ]);
         Subgenre::create($data);
@@ -35,6 +40,9 @@ class SubGenreController extends Controller
 
     public function update(Request $request, string $id)
     {
+        $request->validate([
+            'name' => 'required',
+        ]);
         $res = Subgenre::find($id);
         $data = $request->only([
             'name',

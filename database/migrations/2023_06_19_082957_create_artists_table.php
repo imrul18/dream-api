@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('spotify_url')->nullable();
             $table->string('apple_url')->nullable();
             $table->string('facebook_url')->nullable();
-            $table->string('instragram_url')->nullable();
+            $table->string('instagram_url')->nullable();
             $table->string('youtube_url')->nullable();
             $table->enum('status', [1, 2, 3])->default(2);
             $table->softDeletes();

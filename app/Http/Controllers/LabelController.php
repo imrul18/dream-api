@@ -9,8 +9,16 @@ class LabelController extends Controller
 {
     public function index(Request $request)
     {
-        $res = Label::where('title', 'like', '%' . $request->q . '%');
-        if ($request->requested) $res->where('status', $request->requested);
+        $res = Label::with('user')->where(function ($q) use ($request) {
+            $q->where('title', 'like', '%' . $request->q . '%')
+                ->orWhereHas('user', function ($user) use ($request) {
+                    $user->where('name', 'like', '%' . $request->q . '%');
+                });
+        });
+
+        if ($request->status) $res->where('status', $request->status);
+        if ($request->user) $res->where('user_id', $request->user);
+
         $res = $res->paginate($request->get('perPage', 10));
         return response()->json($res, 200);
     }
@@ -20,6 +28,8 @@ class LabelController extends Controller
         $request->validate([
             'user_id' => 'required',
             'title' => 'required',
+        ], [
+            'user_id.required' => 'User is required.',
         ]);
         $data = $request->only([
             'user_id',

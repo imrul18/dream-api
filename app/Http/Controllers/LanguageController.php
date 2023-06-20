@@ -16,7 +16,7 @@ class LanguageController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required',
+            'name' => 'required',
         ]);
         $data = $request->only([
             'name'
@@ -36,6 +36,9 @@ class LanguageController extends Controller
     public function update(Request $request, string $id)
     {
         $res = Language::find($id);
+        $request->validate([
+            'name' => 'required',
+        ]);
         $data = $request->only([
             'name',
             'status'

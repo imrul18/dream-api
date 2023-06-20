@@ -9,7 +9,15 @@ class ArtistController extends Controller
 {
     public function index(Request $request)
     {
-        $res = Artist::where('title', 'like', '%' . $request->q . '%')->paginate($request->get('perPage', 10));
+        $res = Artist::with('user')->where(function ($q) use ($request) {
+            $q->where('title', 'like', '%' . $request->q . '%')
+                ->orWhereHas('user', function ($user) use ($request) {
+                    $user->where('name', 'like', '%' . $request->q . '%');
+                });
+        });
+        if ($request->status) $res->where('status', $request->status);
+        if ($request->user) $res->where('user_id', $request->user);
+        $res = $res->paginate($request->get('perPage', 10));
         return response()->json($res, 200);
     }
 
@@ -25,7 +33,7 @@ class ArtistController extends Controller
             'spotify_url',
             'apple_url',
             'facebook_url',
-            'instragram_url',
+            'instagram_url',
             'youtube_url',
         ]);
         $data['status'] = 2;
@@ -49,7 +57,7 @@ class ArtistController extends Controller
             'spotify_url',
             'apple_url',
             'facebook_url',
-            'instragram_url',
+            'instagram_url',
             'youtube_url',
             'status',
         ]);
@@ -75,7 +83,7 @@ class ArtistController extends Controller
             'spotify_url',
             'apple_url',
             'facebook_url',
-            'instragram_url',
+            'instagram_url',
             'youtube_url',
         ]);
         $data['user_id'] = auth()->user()->id;
@@ -93,7 +101,7 @@ class ArtistController extends Controller
             'spotify_url',
             'apple_url',
             'facebook_url',
-            'instragram_url',
+            'instagram_url',
             'youtube_url',
         ]);
         $res->update($data);

@@ -21,8 +21,18 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'isAdmin'
+        'isAdmin',
+        'status'
     ];
+
+    protected $appends = [
+        'current_status'
+    ];
+
+    public function getCurrentStatusAttribute()
+    {
+        return $this->status ? 'Active' : 'Inactive';
+    }
 
     /**
      * The attributes that should be hidden for serialization.

@@ -23,4 +23,13 @@ class Language extends Model
     {
         return $this->status ? 'Active' : 'Inactive';
     }
+
+    public function status()
+    {
+        return [
+            1 => 'Pending',
+            2 => 'Approved',
+            3 => 'Rejected',
+        ];
+    }
 }

@@ -8,10 +8,23 @@ use App\Models\Genre;
 use App\Models\Label;
 use App\Models\Language;
 use App\Models\ParentalAdvisory;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class OptionController extends Controller
 {
+    public function user()
+    {
+        $res = User::where('isAdmin', false)->get();
+        $data = [];
+        foreach ($res as $value) {
+            $data[] = [
+                'value' => $value->id,
+                'label' => $value->name,
+            ];
+        }
+        return response()->json($data);
+    }
     public function artist()
     {
         // TODO change this to auth()->user()->id when auth is ready
@@ -20,7 +33,7 @@ class OptionController extends Controller
         foreach ($res as $value) {
             $data[] = [
                 'value' => $value->id,
-                'labe' => $value->title,
+                'label' => $value->title,
             ];
         }
         return response()->json($data);
@@ -33,7 +46,7 @@ class OptionController extends Controller
         foreach ($res as $value) {
             $data[] = [
                 'value' => $value->id,
-                'labe' => $value->name,
+                'label' => $value->name,
             ];
         }
         return response()->json($data);
@@ -48,12 +61,12 @@ class OptionController extends Controller
             foreach ($value->subgenres()->where('status', true)->get() as $subgenre) {
                 $subdata[] = [
                     'value' => $subgenre->id,
-                    'labe' => $subgenre->name,
+                    'label' => $subgenre->name,
                 ];
             }
             $data[] = [
                 'value' => $value->id,
-                'labe' => $value->name,
+                'label' => $value->name,
                 'subgenres' => $subdata
             ];
         }
@@ -68,7 +81,7 @@ class OptionController extends Controller
         foreach ($res as $value) {
             $data[] = [
                 'value' => $value->id,
-                'labe' => $value->title,
+                'label' => $value->title,
             ];
         }
         return response()->json($data);
@@ -81,7 +94,7 @@ class OptionController extends Controller
         foreach ($res as $value) {
             $data[] = [
                 'value' => $value->id,
-                'labe' => $value->name,
+                'label' => $value->name,
             ];
         }
         return response()->json($data);
@@ -94,7 +107,7 @@ class OptionController extends Controller
         foreach ($res as $value) {
             $data[] = [
                 'value' => $value->id,
-                'labe' => $value->name,
+                'label' => $value->name,
             ];
         }
         return response()->json($data);

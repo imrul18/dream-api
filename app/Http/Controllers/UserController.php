@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Genre;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
-class GenreController extends Controller
+class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $res = Genre::where('name', 'like', '%' . $request->q . '%')->paginate($request->get('perPage', 10));
+        $res = User::where('isAdmin', false)->where('name', 'like', '%' . $request->q . '%')->paginate($request->get('perPage', 10));
         return response()->json($res, 200);
     }
 
@@ -17,19 +18,23 @@ class GenreController extends Controller
     {
         $request->validate([
             'name' => 'required',
+            'email' => 'required|unique:users,email',
+            'password' => 'required'
         ]);
         $data = $request->only([
-            'name'
+            'name',
+            'email'
         ]);
-        Genre::create($data);
+        $data['password'] = Hash::make($request->password);
+        User::create($data);
         return response()->json([
-            'message' => 'Genre created successfully',
+            'message' => 'User created successfully',
         ], 201);
     }
 
     public function show(string $id)
     {
-        $res = Genre::find($id);
+        $res = User::find($id);
         return response()->json($res, 200);
     }
 
@@ -38,11 +43,12 @@ class GenreController extends Controller
         $request->validate([
             'name' => 'required',
         ]);
-        $res = Genre::find($id);
+        $res = User::find($id);
         $data = $request->only([
             'name',
             'status'
         ]);
+        if (isset($request->password)) $data['password'] = Hash::make($request->password);
         $res->update($data);
         return response()->json([
             'message' => 'Genre updated successfully',

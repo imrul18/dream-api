@@ -26,4 +26,23 @@ class AuthController extends Controller
         $user->token = $user->createToken('token')->plainTextToken;
         return response()->json($user, 200);
     }
+
+    public function adminLogin(Request $request)
+    {
+        $request->validate([
+            'email' => 'required',
+            'password' => 'required',
+        ]);
+        $user = User::where('email', $request->email)->where('isAdmin', true)->first();
+        if (!$user) return response()->json([
+            'message' => 'User not found',
+            'status' => 203,
+        ], 203);
+        if (!Hash::check($request->password, $user->password)) return response()->json([
+            'message' => 'Password is incorrect',
+            'status' => 203,
+        ], 203);
+        $user->token = $user->createToken('token')->plainTextToken;
+        return response()->json($user, 200);
+    }
 }
