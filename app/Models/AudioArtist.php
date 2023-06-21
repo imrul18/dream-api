@@ -16,4 +16,9 @@ class AudioArtist extends Model
         'isPrimary',
         'sequence_number'
     ];
+
+    public function artist()
+    {
+        return $this->belongsTo(Artist::class);
+    }
 }

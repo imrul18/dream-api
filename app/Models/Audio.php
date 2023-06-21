@@ -46,12 +46,16 @@ class Audio extends Model
     {
         parent::boot();
         self::addGlobalScope(function ($model) {
-            return $model
-                ->with('artists', 'featurings', 'remixers', 'arrangers', 'producers', 'files', 'images')
-                // ->where('user_id', auth()->user()->id); //TODO uncomment this when auth is ready
-                ->where('user_id', 1);
+            $model->with('language', 'genre', 'subgenre', 'label', 'format', 'parentalAdvisory', 'artists.artist', 'featurings', 'remixers', 'arrangers', 'producers', 'composers', 'files', 'images');
+            if (!auth()->user()->isAdmin) {
+                $model->where('user_id', auth()->user()->id); //TODO uncomment this when auth is ready
+            } else {
+                $model->with('user');
+            }
+            return $model;
         });
     }
+
 
     public function status()
     {
@@ -61,6 +65,41 @@ class Audio extends Model
             3 => 'Approved',
             4 => 'Rejected',
         ];
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function language()
+    {
+        return $this->belongsTo(Language::class);
+    }
+
+    public function genre()
+    {
+        return $this->belongsTo(Genre::class);
+    }
+
+    public function subgenre()
+    {
+        return $this->belongsTo(Subgenre::class);
+    }
+
+    public function label()
+    {
+        return $this->belongsTo(Label::class);
+    }
+
+    public function parentalAdvisory()
+    {
+        return $this->belongsTo(ParentalAdvisory::class);
+    }
+
+    public function format()
+    {
+        return $this->belongsTo(Format::class);
     }
 
     public function artists()
@@ -86,6 +125,11 @@ class Audio extends Model
     public function producers()
     {
         return $this->hasMany(AudioProducer::class);
+    }
+
+    public function composers()
+    {
+        return $this->hasMany(AudioComposer::class);
     }
 
     public function files()

@@ -95,7 +95,10 @@ Route::middleware('auth:sanctum')->group(function () {
                     Route::post('/{id}', 'update');
                 });
             });
+            Route::get('audio', [AudioController::class, 'index']);
+            Route::get('audio/{id}', [AudioController::class, 'show']);
             Route::post('audio/{id}', [AudioController::class, 'update']);
+
             Route::prefix('option')->group(function () {
                 Route::controller(OptionController::class)->group(function () {
                     Route::get('user', 'user');
@@ -108,11 +111,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::controller(AudioController::class)->group(function () {
         Route::post('audio', 'store');
         Route::get('audio', 'index');
-        Route::get('approved-audio', 'approved');
-        Route::get('pending-audio', 'pending');
-        Route::get('draft-audio', 'draft');
-        Route::get('rejected-audio', 'rejected');
-        Route::get('caller-tune-audio', 'callerTune');
     });
     Route::prefix('artist')->group(function () {
         Route::controller(ArtistController::class)->group(function () {

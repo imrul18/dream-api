@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Audio;
 use App\Models\AudioArranger;
 use App\Models\AudioArtist;
+use App\Models\AudioComposer;
 use App\Models\AudioFeaturing;
 use App\Models\AudioFile;
 use App\Models\AudioImage;
@@ -15,6 +16,23 @@ use Illuminate\Support\Facades\File;
 
 class AudioController extends Controller
 {
+    public function index(Request $request)
+    {
+        $data = Audio::where('title', 'like', '%' . $request->q . '%');
+        if (isset($request->status)) $data = $data->where('status', $request->status);
+        if (isset($request->user)) $data = $data->where('user_id', $request->user);
+        if (isset($request->is_coller_tune)) $data = $data->where('is_coller_tune', $request->is_coller_tune);
+        $data = $data->paginate($request->get('perPage', 10));
+
+        return response()->json($data, 200);
+    }
+
+    public function show(string $id)
+    {
+        $data = Audio::find($id);
+        return response()->json($data, 200);
+    }
+
     public function update(Request $request, string $id)
     {
         $res = Audio::find($id);
@@ -31,7 +49,7 @@ class AudioController extends Controller
         $status = null;
         if ($request->status == 1) {
             $message = 'Audio hold successfully';
-            $status = 203;
+            $status = 201;
         } else if ($request->status == 2) {
             $message = 'Audio drafted successfully';
             $status = 201;
@@ -40,10 +58,11 @@ class AudioController extends Controller
             $status = 201;
         } else if ($request->status == 4) {
             $message = 'Audio rejected successfully';
-            $status = 203;
+            $status = 201;
         }
         return response()->json([
             'message' => $message,
+            'status' => $status,
         ], $status);
     }
 
@@ -86,8 +105,7 @@ class AudioController extends Controller
             'parental_advisory_id',
             'producer_catalogue_number',
         ]);
-        $data['user_id'] = 1;
-        // $data['user_id'] = auth()->user()->id; //TODO uncomment this when auth is ready
+        $data['user_id'] = auth()->user()->id; //TODO uncomment this when auth is ready
 
         $data['status'] = 1;
         $data['is_coller_tune'] = false;
@@ -152,6 +170,19 @@ class AudioController extends Controller
         }
         AudioArranger::insert($arrangers);
 
+        $composers = [];
+        foreach ($request->composer ?? [] as $index => $composer) {
+            $composers[] = [
+                'audio_id' => $audio->id,
+                'composer' => $composer['name'],
+                'isPrimary' => $index == 0 ? true : false,
+                'sequence_number' => $index + 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+        AudioComposer::insert($composers);
+
         $producers = [];
         foreach ($request->producer ?? [] as $index => $producer) {
             $producers[] = [
@@ -208,36 +239,5 @@ class AudioController extends Controller
         return response()->json([
             'message' => 'Audio created successfully',
         ], 201);
-    }
-
-    public function index(Request $request)
-    {
-        $data = Audio::paginate($request->get('perPage', 10));
-        return response()->json($data, 200);
-    }
-    public function approved(Request $request)
-    {
-        $data = Audio::where('status', 3)->paginate($request->get('perPage', 10));
-        return response()->json($data, 200);
-    }
-    public function pending(Request $request)
-    {
-        $data = Audio::where('status', 1)->paginate($request->get('perPage', 10));
-        return response()->json($data, 200);
-    }
-    public function draft(Request $request)
-    {
-        $data = Audio::where('status', 2)->paginate($request->get('perPage', 10));
-        return response()->json($data, 200);
-    }
-    public function rejected(Request $request)
-    {
-        $data = Audio::where('status', 4)->paginate($request->get('perPage', 10));
-        return response()->json($data, 200);
-    }
-    public function callerTune(Request $request)
-    {
-        $data = Audio::where('is_coller_tune', true)->paginate($request->get('perPage', 10));
-        return response()->json($data, 200);
     }
 }
