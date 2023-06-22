@@ -12,11 +12,6 @@ class YoutubeRequestController extends Controller
         $type = $request->type;
         $data = [];
         if (isset($type)) {
-
-            $x = YoutubeRequest::first();
-            info($x->type);
-            info($type);
-
             $data = YoutubeRequest::where('type', $type);
             if (isset($request->status)) $data = $data->where('status', $request->status);
             if (isset($request->user)) $data = $data->where('user_id', $request->user);
