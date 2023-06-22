@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('parental_advisories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->boolean('status')->default(true);
+            $table->boolean('status')->default(true)->comment('1:active,0:inactive');
             $table->softDeletes();
             $table->timestamps();
         });

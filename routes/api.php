@@ -10,7 +10,9 @@ use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\OptionController;
 use App\Http\Controllers\ParentalAdvisoryController;
 use App\Http\Controllers\SubGenreController;
+use App\Http\Controllers\SupportCenterController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\YoutubeRequestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -105,6 +107,22 @@ Route::middleware('auth:sanctum')->group(function () {
                     Route::get('genre', 'genre');
                 });
             });
+
+            Route::controller(SupportCenterController::class)->group(
+                function () {
+                    Route::get('support-center', 'index');
+                    Route::get('support-center/{id}', 'show');
+                    Route::post('support-center/{id}', 'update');
+                    Route::post('support-message', 'sendMessageFromAdmin');
+                }
+            );
+
+            Route::controller(YoutubeRequestController::class)->group(
+                function () {
+                    Route::get('youtube-request', 'index');
+                    Route::post('youtube-request/{id}', 'update');
+                }
+            );
         });
     });
 
@@ -136,4 +154,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('parental-advisory', 'parentalAdvisory');
         });
     });
+    Route::get('support-center', [SupportCenterController::class, 'index']);
+    Route::get('support-center/{id}', [SupportCenterController::class, 'show']);
+    Route::post('support-message', [SupportCenterController::class, 'sendMessageFromUser']);
 });
