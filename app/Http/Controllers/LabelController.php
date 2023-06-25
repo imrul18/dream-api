@@ -70,7 +70,8 @@ class LabelController extends Controller
     {
         $res = Label::where('title', 'like', '%' . $request->q . '%');
         if ($request->requested) $res->where('status', $request->requested);
-        $res = $res->paginate($request->get('perPage', 10));
+        // $res = $res->get();
+        $res = $res->paginate($request->get('perPage', 100));
         return response()->json($res, 200);
     }
 
@@ -89,6 +90,7 @@ class LabelController extends Controller
         Label::create($data);
         return response()->json([
             'message' => 'Label created successfully',
+            'status' => 201
         ], 201);
     }
 
