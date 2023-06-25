@@ -28,7 +28,7 @@ class OptionController extends Controller
     public function artist()
     {
         // TODO change this to auth()->user()->id when auth is ready
-        $res = Artist::where('user_id', 1)->where('status', 2)->get();
+        $res = Artist::where('user_id', auth()->user()->id)->where('status', 2)->get();
         $data = [];
         foreach ($res as $value) {
             $data[] = [
@@ -76,7 +76,7 @@ class OptionController extends Controller
     public function label()
     {
         // TODO change this to auth()->user()->id when auth is ready
-        $res = Label::where('user_id', 1)->where('status', 2)->get();
+        $res = Label::where('user_id', auth()->user()->id)->where('status', 2)->get();
         $data = [];
         foreach ($res as $value) {
             $data[] = [

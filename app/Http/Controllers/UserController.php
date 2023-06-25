@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -26,7 +27,11 @@ class UserController extends Controller
             'email'
         ]);
         $data['password'] = Hash::make($request->password);
-        User::create($data);
+        $user = User::create($data);
+        Account::create([
+            'user_id' => $user->id,
+            'balance' => 0
+        ]);
         return response()->json([
             'message' => 'User created successfully',
         ], 201);

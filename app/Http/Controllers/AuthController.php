@@ -10,11 +10,15 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required',
-            'password' => 'required',
-        ]);
-        $user = User::where('email', $request->email)->first();
+        // $request->validate([
+        //     'email' => 'required',
+        //     'password' => 'required',
+        // ]);
+        if (!isset($request->email)) return response()->json([
+            'message' => 'username/Email can not be Empty',
+            'status' => 203
+        ], 203);
+        $user = User::where('email', $request->email)->orWhere('username', $request->email)->first();
         if (!$user) return response()->json([
             'message' => 'User not found',
             'status' => 203,
@@ -24,6 +28,7 @@ class AuthController extends Controller
             'status' => 203,
         ], 203);
         $user->token = $user->createToken('token')->plainTextToken;
+        $user->status = 200;
         return response()->json($user, 200);
     }
 
