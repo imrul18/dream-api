@@ -154,7 +154,14 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('parental-advisory', 'parentalAdvisory');
         });
     });
-    Route::get('support-center', [SupportCenterController::class, 'index']);
+    Route::controller(YoutubeRequestController::class)->group(
+        function () {
+            Route::get('youtube-request', 'index');
+            Route::post('youtube-request', 'store');
+        }
+    );
+    Route::get('support-center', [SupportCenterController::class, 'userIndex']);
+    Route::post('ticket', [SupportCenterController::class, 'store']);
     Route::get('support-center/{id}', [SupportCenterController::class, 'show']);
     Route::post('support-message', [SupportCenterController::class, 'sendMessageFromUser']);
 });

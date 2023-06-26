@@ -27,6 +27,31 @@ class YoutubeRequestController extends Controller
         return response()->json($data, 200);
     }
 
+    public function store(Request $request)
+    {
+        $data = $request->only([
+            'type',
+            'claim_url',
+            'claim_upc',
+            'content_upc',
+            'artist_channel_link',
+            'artist_topic_link',
+            'artist_upc1',
+            'artist_upc2',
+            'artist_upc3',
+        ]);
+
+        $data['status'] = 1;
+        $data['user_id'] = auth()->user()->id;
+
+        YoutubeRequest::create($data);
+
+        return response()->json([
+            'message' => 'Request created successfully',
+            'status' => 201
+        ], 201);
+    }
+
     public function update(Request $request, string $id)
     {
         $res = YoutubeRequest::find($id);

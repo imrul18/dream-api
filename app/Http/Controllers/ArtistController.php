@@ -70,7 +70,7 @@ class ArtistController extends Controller
     //for user
     public function userIndex(Request $request)
     {
-        $res = Artist::where('title', 'like', '%' . $request->q . '%')->paginate($request->get('perPage', 10));
+        $res = Artist::where('title', 'like', '%' . $request->q . '%')->paginate($request->get('perPage', 1000));
         return response()->json($res, 200);
     }
     public function userStore(Request $request)
@@ -91,6 +91,7 @@ class ArtistController extends Controller
         Artist::create($data);
         return response()->json([
             'message' => 'Artist created successfully',
+            'status' => 201
         ], 201);
     }
     public function userUpdate(Request $request, string $id)

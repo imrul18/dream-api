@@ -71,7 +71,7 @@ class LabelController extends Controller
         $res = Label::where('title', 'like', '%' . $request->q . '%');
         if ($request->requested) $res->where('status', $request->requested);
         // $res = $res->get();
-        $res = $res->paginate($request->get('perPage', 100));
+        $res = $res->paginate($request->get('perPage', 1000));
         return response()->json($res, 200);
     }
 

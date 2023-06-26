@@ -17,6 +17,13 @@ class SupportCenterController extends Controller
         return response()->json($data, 200);
     }
 
+    public function userIndex(Request $request)
+    {
+        $data = SupportTicket::where('title', 'like', '%' . $request->q . '%');
+        $data = $data->paginate($request->get('perPage', 1000));
+        return response()->json($data, 200);
+    }
+
     public function show(string $id)
     {
         $data = SupportTicket::find($id);
@@ -46,6 +53,26 @@ class SupportCenterController extends Controller
         return response()->json($data, 201);
     }
 
+    public function store(Request $request)
+    {
+        $data = $request->only([
+            'title',
+        ]);
+        $data['status'] = 1;
+        $data['user_id'] = $request->user()->id;
+        $support = SupportTicket::create($data);
+        $message = $request->only([
+            'message',
+        ]);
+        $message['sender'] = 1;
+        $message['support_ticket_id'] = $support->id;
+        SupportMessage::create($message);
+        return response()->json([
+            'message' => 'Ticket created successfully',
+            'status' => 201
+        ], 201);
+    }
+
     public function sendMessageFromAdmin(Request $request)
     {
         $data = $request->only([
@@ -56,10 +83,11 @@ class SupportCenterController extends Controller
         SupportMessage::create($data);
 
         $res = SupportTicket::find($request->support_ticket_id);
+        $res['updated_at'] = now();
         if ($res->status == 1) {
             $data = ['status' => 2];
-            $res->update($data);
         }
+        $res->update($data);
         return response()->json([
             'message' => "Message Sent Successfully",
             'status' => 201,
@@ -74,6 +102,9 @@ class SupportCenterController extends Controller
         ]);
         $data['sender'] = 1;
         SupportMessage::create($data);
+        $res = SupportTicket::find($request->support_ticket_id);
+        $res['updated_at'] = now();
+        $res->update($data);
         return response()->json([
             'message' => "Message Sent Successfully",
             'status' => 201,
