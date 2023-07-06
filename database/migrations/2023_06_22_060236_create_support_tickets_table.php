@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->integer('user_id');
             $table->string('title');
+            $table->integer('unread_for_admin')->nullable();
+            $table->integer('unread_for_user')->nullable();
             $table->integer('status')->default(1)->comment('1:pending,2:ongoing,3:complete');
             $table->timestamps();
         });

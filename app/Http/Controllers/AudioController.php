@@ -114,15 +114,18 @@ class AudioController extends Controller
 
         if (!$audio) {
             return response()->json([
-                'message' => 'Failed to create audio'
+                'message' => 'Failed to create audio',
+                'status' => 203
             ], 203);
         }
 
+
+        // return response()->json(["a" => $request->artist]);
         $artists = [];
         foreach ($request->artist ?? [] as $index => $artist) {
             $artists[] = [
                 'audio_id' => $audio->id,
-                'artist_id' => $artist,
+                'artist_id' => $artist['value'],
                 'isPrimary' => $index == 0 ? true : false,
                 'sequence_number' => $index + 1,
                 'created_at' => now(),
@@ -199,8 +202,9 @@ class AudioController extends Controller
         $files = [];
         File::makeDirectory(public_path('uploads/file'), 0777, true, true);
         foreach ($request->file ?? [] as $index => $file) {
+            return ['a' => $file['fileAudio']->getOriginalExtension()];
             $unique = uniqid();
-            $fileName = $unique . time() . '.' . $file->getClientOriginalExtension();
+            $fileName = $unique . time() . '.' . $file->extension();
             $destinationPath = public_path('uploads/file');
             $file->move($destinationPath, $fileName);
             $filePath = 'uploads/file/' . $fileName;
@@ -218,26 +222,45 @@ class AudioController extends Controller
 
         $images = [];
         File::makeDirectory(public_path('uploads/image'), 0777, true, true);
-        foreach ($request->file('image') ?? [] as $index => $image) {
+        if ($request->hasFile('image')) {
+            return "A";
             $unique = uniqid();
-            $fileName = $unique . time() . '.' . $image->getClientOriginalExtension();
+            $fileName = $request->image->extension();
             $destinationPath = public_path('uploads/image');
-            $image->move($destinationPath, $fileName);
+            $request->image->move($destinationPath, $fileName);
             $filePath = 'uploads/image/' . $fileName;
 
-            $images[] = [
+            $images = [
                 'audio_id' => $audio->id,
                 'image_name' => $fileName,
                 'image_url' => $filePath,
-                'sequence_number' => $index + 1,
+                'sequence_number' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
+            AudioImage::insert($images);
         }
-        AudioImage::insert($images);
+        // foreach ($request->image ?? [] as $index => $image) {
+        //     $unique = uniqid();
+        //     $fileName = $unique . time() . '.' . $image->extension();
+        //     $destinationPath = public_path('uploads/image');
+        //     $image->move($destinationPath, $fileName);
+        //     $filePath = 'uploads/image/' . $fileName;
+
+        //     $images[] = [
+        //         'audio_id' => $audio->id,
+        //         'image_name' => $fileName,
+        //         'image_url' => $filePath,
+        //         'sequence_number' => $index + 1,
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ];
+        // }
+
 
         return response()->json([
             'message' => 'Audio created successfully',
+            'status' => 201
         ], 201);
     }
 }

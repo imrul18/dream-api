@@ -162,6 +162,7 @@ Route::middleware('auth:sanctum')->group(function () {
     );
     Route::get('support-center', [SupportCenterController::class, 'userIndex']);
     Route::post('ticket', [SupportCenterController::class, 'store']);
+    Route::get('ticket/{id}', [SupportCenterController::class, 'sms']);
     Route::get('support-center/{id}', [SupportCenterController::class, 'show']);
     Route::post('support-message', [SupportCenterController::class, 'sendMessageFromUser']);
 });

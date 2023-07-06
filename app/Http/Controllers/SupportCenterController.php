@@ -73,6 +73,15 @@ class SupportCenterController extends Controller
         ], 201);
     }
 
+    public function sms(string $id)
+    {
+        $res = SupportTicket::find($id);
+        $res['unread_for_user'] = 0;
+        $res->save();
+        $sms = SupportMessage::where('support_ticket_id', $id)->get();
+        return response()->json($sms, 200);
+    }
+
     public function sendMessageFromAdmin(Request $request)
     {
         $data = $request->only([
@@ -87,6 +96,8 @@ class SupportCenterController extends Controller
         if ($res->status == 1) {
             $data = ['status' => 2];
         }
+        $res['unread_for_user'] = $res->unread_for_user + 1;
+        $res['unread_for_admin'] = 0;
         $res->update($data);
         return response()->json([
             'message' => "Message Sent Successfully",
@@ -104,6 +115,8 @@ class SupportCenterController extends Controller
         SupportMessage::create($data);
         $res = SupportTicket::find($request->support_ticket_id);
         $res['updated_at'] = now();
+        $res['unread_for_user'] = 0;
+        $res['unread_for_admin'] = $res->unread_for_admin + 1;
         $res->update($data);
         return response()->json([
             'message' => "Message Sent Successfully",
