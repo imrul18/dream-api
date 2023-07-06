@@ -14,7 +14,6 @@ class AudioFile extends Model
         'audio_id',
         'file_name',
         'file_url',
-        'sequence_number'
     ];
 
     protected $appends = ['file_download_url'];

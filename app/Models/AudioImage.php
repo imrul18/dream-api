@@ -14,7 +14,6 @@ class AudioImage extends Model
         'audio_id',
         'image_name',
         'image_url',
-        'sequence_number'
     ];
 
     protected $appends = ['image_download_url'];

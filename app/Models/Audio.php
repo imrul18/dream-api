@@ -134,11 +134,11 @@ class Audio extends Model
 
     public function files()
     {
-        return $this->hasMany(AudioFile::class);
+        return $this->hasOne(AudioFile::class);
     }
 
     public function images()
     {
-        return $this->hasMany(AudioImage::class);
+        return $this->hasOne(AudioImage::class);
     }
 }

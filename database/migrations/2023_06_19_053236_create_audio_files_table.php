@@ -16,7 +16,6 @@ return new class extends Migration
             $table->integer('audio_id');
             $table->string('file_name');
             $table->string('file_url');
-            $table->integer('sequence_number');
             $table->softDeletes();
             $table->timestamps();
         });
