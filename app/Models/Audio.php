@@ -28,7 +28,7 @@ class Audio extends Model
         'isrc',
         'parental_advisory_id',
         'producer_catalogue_number',
-        'is_coller_tune',
+        'is_caller_tune',
         'status',
         'note',
     ];

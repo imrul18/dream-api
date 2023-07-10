@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('isrc')->nullable();
             $table->string('parental_advisory_id')->nullable();
             $table->string('producer_catalogue_number')->nullable();
-            $table->boolean('is_coller_tune')->default(false);
+            $table->boolean('is_caller_tune')->default(false);
             $table->enum('status', [1, 2, 3, 4])->default(1);
             $table->text('note')->nullable();
             $table->softDeletes();

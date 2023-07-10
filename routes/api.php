@@ -1,8 +1,12 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\AudioController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BankAccountController;
+use App\Http\Controllers\CallerTuneController;
+use App\Http\Controllers\CRBTController;
 use App\Http\Controllers\FormatController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\LabelController;
@@ -13,6 +17,8 @@ use App\Http\Controllers\SubGenreController;
 use App\Http\Controllers\SupportCenterController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\YoutubeRequestController;
+use App\Models\CallerTune;
+use App\Models\CallerTuneCrbt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -97,9 +103,29 @@ Route::middleware('auth:sanctum')->group(function () {
                     Route::post('/{id}', 'update');
                 });
             });
+            Route::prefix('crbt')->group(function () {
+                Route::controller(CRBTController::class)->group(function () {
+                    Route::get('', 'index');
+                    Route::post('', 'store');
+                    Route::get('/{id}', 'show');
+                    Route::post('/{id}', 'update');
+                });
+            });
+            Route::prefix('transaction')->group(function () {
+                Route::controller(AccountController::class)->group(function () {
+                    Route::get('', 'index');
+                    Route::post('', 'store');
+                    Route::get('/{id}', 'show');
+                    Route::post('/{id}', 'update');
+                });
+            });
             Route::get('audio', [AudioController::class, 'index']);
             Route::get('audio/{id}', [AudioController::class, 'show']);
             Route::post('audio/{id}', [AudioController::class, 'update']);
+
+            Route::get('caller-tune', [CallerTuneController::class, 'index']);
+            // // Route::get('caller-tune/{id}', [AudioController::class, 'show']);
+            Route::post('caller-tune/{id}', [CallerTuneController::class, 'update']);
 
             Route::prefix('option')->group(function () {
                 Route::controller(OptionController::class)->group(function () {
@@ -130,6 +156,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('audio', 'store');
         Route::get('audio', 'index');
     });
+    Route::controller(CallerTuneController::class)->group(function () {
+        Route::get('caller-tune', 'userIndex');
+        Route::post('caller-tune', 'store');
+    });
     Route::prefix('artist')->group(function () {
         Route::controller(ArtistController::class)->group(function () {
             Route::get('', 'userIndex');
@@ -144,6 +174,17 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/{id}', 'userUpdate');
         });
     });
+    Route::prefix('bank-account')->group(function () {
+        Route::controller(BankAccountController::class)->group(function () {
+            Route::get('', 'index');
+            Route::post('', 'store');
+            Route::post('/{id}', 'userUpdate');
+        });
+    });
+    Route::get('active-bank-account/{id}', [BankAccountController::class, 'activeBankAccount']);
+    Route::post('withdraw-balance', [AccountController::class, 'withdrawBalance']);
+    Route::get('overview', [AccountController::class, 'overview']);
+
     Route::prefix('option')->group(function () {
         Route::controller(OptionController::class)->group(function () {
             Route::get('artist', 'artist');
@@ -152,6 +193,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('label', 'label');
             Route::get('format', 'format');
             Route::get('parental-advisory', 'parentalAdvisory');
+            Route::get('crbt', 'crbt');
         });
     });
     Route::controller(YoutubeRequestController::class)->group(

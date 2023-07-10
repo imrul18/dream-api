@@ -21,7 +21,7 @@ class AudioController extends Controller
         $data = Audio::where('title', 'like', '%' . $request->q . '%');
         if (isset($request->status)) $data = $data->where('status', $request->status);
         if (isset($request->user)) $data = $data->where('user_id', $request->user);
-        if (isset($request->is_coller_tune)) $data = $data->where('is_coller_tune', $request->is_coller_tune);
+        if (isset($request->is_caller_tune)) $data = $data->where('is_caller_tune', $request->is_caller_tune);
         $data = $data->paginate($request->get('perPage', 10));
 
         return response()->json($data, 200);
@@ -108,7 +108,7 @@ class AudioController extends Controller
         $data['user_id'] = auth()->user()->id; //TODO uncomment this when auth is ready
 
         $data['status'] = 1;
-        $data['is_coller_tune'] = false;
+        $data['is_caller_tune'] = false;
 
         $audio = Audio::create($data);
 

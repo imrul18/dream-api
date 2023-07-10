@@ -11,17 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('bank_accounts', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id');
-            $table->string('date');
-            $table->string('amount');
-            $table->string('type');
-            $table->string('for')->nullable();
-            $table->integer('bank_id')->nullable();
-            $table->string('status');
-            $table->string('note')->nullable();
-            $table->string('file_url')->nullable();
+            $table->string('bank_name');
+            $table->string('account_name');
+            $table->string('account_number');
+            $table->string('ifsc');
+            $table->boolean('isPrimary');
             $table->timestamps();
         });
     }
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('bank_accounts');
     }
 };

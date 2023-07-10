@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Artist;
+use App\Models\Crbt;
 use App\Models\Format;
 use App\Models\Genre;
 use App\Models\Label;
@@ -111,5 +112,11 @@ class OptionController extends Controller
             ];
         }
         return response()->json($data);
+    }
+
+    public function crbt()
+    {
+        $res = Crbt::get();
+        return response()->json($res);
     }
 }

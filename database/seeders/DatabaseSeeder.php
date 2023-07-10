@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Account;
 use App\Models\Artist;
 use App\Models\Format;
 use App\Models\Genre;
@@ -36,6 +37,11 @@ class DatabaseSeeder extends Seeder
             'email' => 'imrul@example.com',
             'password' => Hash::make('123456'),
             'isAdmin' => false
+        ]);
+
+        Account::create([
+            'user_id' => 2,
+            'balance' => 0,
         ]);
 
         Language::create(['name' => 'English']);
