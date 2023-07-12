@@ -18,8 +18,17 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
+        'phone',
+        'city',
+        'state',
+        'postal_address',
+        'postal_code',
+        'country',
+        'govt_id',
         'username',
+        'profile_image',
         'email',
         'password',
         'isAdmin',
@@ -27,12 +36,17 @@ class User extends Authenticatable
     ];
 
     protected $appends = [
-        'current_status'
+        'current_status', 'profile_image_url'
     ];
 
     public function getCurrentStatusAttribute()
     {
         return $this->status ? 'Active' : 'Inactive';
+    }
+
+    public function getProfileImageUrlAttribute()
+    {
+        return asset($this->profile_image);
     }
 
     /**

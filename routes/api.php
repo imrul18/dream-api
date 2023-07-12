@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\AudioController;
 use App\Http\Controllers\AuthController;
@@ -149,9 +150,19 @@ Route::middleware('auth:sanctum')->group(function () {
                     Route::post('youtube-request/{id}', 'update');
                 }
             );
+            Route::prefix('analytics')->group(function () {
+                Route::controller(AnalyticsController::class)->group(function () {
+                    Route::get('', 'index');
+                    Route::post('/{id}', 'update');
+                });
+            });
         });
     });
 
+    Route::get('dashboard', [AuthController::class, 'dashboard']);
+    Route::get('notification', [AuthController::class, 'notification']);
+    Route::post('update-profile', [AuthController::class, 'profileUpdate']);
+    Route::post('update-image', [AuthController::class, 'imageUpdate']);
     Route::controller(AudioController::class)->group(function () {
         Route::post('audio', 'store');
         Route::get('audio', 'index');
@@ -200,6 +211,12 @@ Route::middleware('auth:sanctum')->group(function () {
         function () {
             Route::get('youtube-request', 'index');
             Route::post('youtube-request', 'store');
+        }
+    );
+    Route::controller(AnalyticsController::class)->group(
+        function () {
+            Route::get('analytics', 'userIndex');
+            Route::post('analytics', 'store');
         }
     );
     Route::get('support-center', [SupportCenterController::class, 'userIndex']);

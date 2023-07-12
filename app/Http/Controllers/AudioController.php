@@ -11,8 +11,11 @@ use App\Models\AudioFile;
 use App\Models\AudioImage;
 use App\Models\AudioProducer;
 use App\Models\AudioRemixer;
+use App\Models\User;
+use App\Notifications\AudioUpdate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Notification;
 
 class AudioController extends Controller
 {
@@ -39,11 +42,35 @@ class AudioController extends Controller
         $request->validate([
             'status' => 'required|in:1,2,3,4',
         ]);
+        if ($request->status == 4) {
+            $request->validate([
+                'note' => 'required',
+            ]);
+        }
         $data = $request->only([
             'status',
             'note'
         ]);
         $res->update($data);
+
+
+        if ($request->status == 3) {
+            $header = 'Release Approved';
+            $message = 'The following release has been Approved';
+            $title = $res->title;
+            $reason = null;
+        } elseif ($request->status == 4) {
+            $header = 'Release Rejected';
+            $message =  'The following release has been Rejected';
+            $title = $res->title;
+            $reason = $res->note;
+        } else {
+            $header = 'Release Status Changed';
+            $message = 'The Status of following release has been changed';
+            $title = $res->title;
+            $reason = null;
+        }
+        sendMailtoUser($res->user, $header, $message, $title, $reason);
 
         $message = '';
         $status = null;
@@ -111,6 +138,13 @@ class AudioController extends Controller
         $data['is_caller_tune'] = false;
 
         $audio = Audio::create($data);
+
+        sendMailtoAdmin(
+            auth()->user(),
+            'Release a New Audio',
+            'The following release has been created by ' . auth()->user()->first_name . ' ' . auth()->user()->last_name . '(' . auth()->user()->username . ')',
+            $audio->title
+        );
 
         if (!$audio) {
             return response()->json([

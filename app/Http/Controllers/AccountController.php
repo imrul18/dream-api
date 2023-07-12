@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\BankAccount;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class AccountController extends Controller
 {
@@ -41,10 +42,29 @@ class AccountController extends Controller
     public function update(Request $request, string $id)
     {
         $res = Transaction::find($id);
-        $data = $request->only([
-            'status',
+        $request->validate([
+            'status' => 'required',
         ]);
-        $res->update($data);
+        if ($request->status == "Approved") {
+            $request->validate([
+                'file_url' => 'required',
+            ], [], [
+                'file_url' => 'File',
+            ]);
+            $data = $request->only([
+                'status',
+            ]);
+            File::makeDirectory(public_path('uploads/withdraw'), 0777, true, true);
+            if ($request->hasFile('file_url')) {
+                $file = $request->file('file_url');
+                $filename = random_int(100000, 999999) . '_' . $request->project_id . '_' . $file->getClientOriginalName();
+                $location = 'uploads/withdraw';
+                $file->move($location, $filename);
+                $filepath = $location . "/" . $filename;
+                $data['file_url'] = $filepath;
+            }
+            $res->update($data);
+        }
         return response()->json([
             'message' => 'Transaction updated successfully',
             'status' => 201,

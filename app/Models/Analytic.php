@@ -5,25 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Transaction extends Model
+class Analytic extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'user_id',
-        'date',
-        'amount',
-        'type',
-        'for',
-        'bank_id',
+        'year',
+        'month',
+        'label_id',
         'status',
-        'note',
         'file_url',
     ];
 
     protected $appends = [
-        'file_download_url'
+        'current_status', 'file_download_url'
     ];
+
+    public function getCurrentStatusAttribute()
+    {
+        return $this->status()[$this->status];
+    }
 
     public function getFileDownloadUrlAttribute()
     {
@@ -35,21 +37,30 @@ class Transaction extends Model
         parent::boot();
         self::addGlobalScope(function ($model) {
             if (!auth()->user()->isAdmin) {
-                $model->where('user_id', auth()->user()->id); //TODO uncomment this when auth is ready
+                $model->where('user_id', auth()->user()->id);
             } else {
                 $model->with('user');
             }
-            return $model;
+            return $model->with('label');
         });
+    }
+
+    public function status()
+    {
+        return [
+            1 => 'Pending',
+            2 => 'Approved',
+            3 => 'Rejected',
+        ];
     }
 
     public function user()
     {
-        return $this->hasOne(User::class, 'id', 'user_id');
+        return $this->belongsTo(User::class);
     }
 
-    public function bank()
+    public function label()
     {
-        return $this->hasOne(BankAccount::class, 'id', 'bank_id');
+        return $this->belongsTo(Label::class);
     }
 }

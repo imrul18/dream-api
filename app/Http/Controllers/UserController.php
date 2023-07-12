@@ -11,20 +11,27 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $res = User::where('isAdmin', false)->where('name', 'like', '%' . $request->q . '%')->paginate($request->get('perPage', 10));
+        $res = User::where('isAdmin', false)->where('first_name', 'like', '%' . $request->q . '%')->orWhere('last_name', 'like', '%' . $request->q . '%')->orWhere('govt_id', 'like', '%' . $request->q . '%')->orWhere('username', 'like', '%' . $request->q . '%')->orWhere('email', 'like', '%' . $request->q . '%')->paginate($request->get('perPage', 10));
         return response()->json($res, 200);
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'govt_id' => 'required',
+            'username' => 'required|unique:users,username',
             'email' => 'required|unique:users,email',
             'password' => 'required'
         ]);
         $data = $request->only([
-            'name',
-            'email'
+            'first_name',
+            'last_name',
+            'govt_id',
+            'username',
+            'email',
+            'password'
         ]);
         $data['password'] = Hash::make($request->password);
         $user = User::create($data);
@@ -46,14 +53,17 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'name' => 'required',
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'govt_id' => 'required',
         ]);
-        $res = User::find($id);
         $data = $request->only([
-            'name',
-            'status'
+            'first_name',
+            'last_name',
+            'govt_id',
         ]);
         if (isset($request->password)) $data['password'] = Hash::make($request->password);
+        $res = User::find($id);
         $res->update($data);
         return response()->json([
             'message' => 'Genre updated successfully',

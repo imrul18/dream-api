@@ -21,7 +21,7 @@ class OptionController extends Controller
         foreach ($res as $value) {
             $data[] = [
                 'value' => $value->id,
-                'label' => $value->name,
+                'label' => $value->first_name . ' ' . $value->last_name,
             ];
         }
         return response()->json($data);
