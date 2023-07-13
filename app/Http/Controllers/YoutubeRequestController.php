@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\YoutubeRequest;
 use Illuminate\Http\Request;
 
+use function PHPSTORM_META\type;
+
 class YoutubeRequestController extends Controller
 {
     public function index(Request $request)
@@ -46,6 +48,22 @@ class YoutubeRequestController extends Controller
 
         YoutubeRequest::create($data);
 
+        $type = "A New Request has been created";
+        if ($request->type == 1) {
+            $type = 'Claim Release - ' . $request->claim_upc;
+        } elseif ($request->type == 2) {
+            $type = 'Content ID Request - ' . $request->content_upc;
+        } elseif ($request->type == 3) {
+            $type = 'Artist Channel Request - ' . $request->artist_upc1;
+        }
+
+        sendMailtoAdmin(
+            auth()->user(),
+            'A New Request has been created',
+            'The following request has been created by ' . auth()->user()->first_name . ' ' . auth()->user()->last_name . '(' . auth()->user()->username . ')',
+            $type
+        );
+
         return response()->json([
             'message' => 'Request created successfully',
             'status' => 201
@@ -58,10 +76,45 @@ class YoutubeRequestController extends Controller
         $request->validate([
             'status' => 'required|in:1,2,3',
         ]);
+        if ($request->status == 3) {
+            $request->validate(
+                [
+                    'note' => 'required'
+                ],
+                [],
+                [
+                    'note' => 'Note',
+
+                ]
+            );
+        }
         $data = $request->only([
             'status',
         ]);
         $res->update($data);
+
+        $type = "A New Request has been created";
+        if ($request->type == 1) {
+            $type = 'Claim Release - ' . $res->claim_upc;
+        } elseif ($request->type == 2) {
+            $type = 'Content ID Request - ' . $res->content_upc;
+        } elseif ($request->type == 3) {
+            $type = 'Artist Channel Request - ' . $res->artist_upc1;
+        }
+        if ($request->status == 1) {
+            $header = 'Request has been Pending';
+            $message = 'The following request has been Pending';
+        } elseif ($request->status == 2) {
+            $header = 'Request has been Approved';
+            $message = 'The following request has been Approved';
+        } elseif ($request->status == 3) {
+            $header = 'Request has been Rejected';
+            $message = 'The following request has been Rejected';
+        } else {
+            $header = 'Request Status Changed';
+            $message = 'The following request status has been changed';
+        }
+        sendMailtoUser($res->user, $header, $message, $type, $request->note ?? null);
 
         return response()->json([
             'message' => "Request Updated Successfully",

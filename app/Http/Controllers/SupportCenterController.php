@@ -67,6 +67,14 @@ class SupportCenterController extends Controller
         $message['sender'] = 1;
         $message['support_ticket_id'] = $support->id;
         SupportMessage::create($message);
+
+        sendMailtoAdmin(
+            auth()->user(),
+            'A New Support Ticket has been created',
+            'The following Support Ticket has been created by ' . auth()->user()->first_name . ' ' . auth()->user()->last_name . '(' . auth()->user()->username . ')',
+            $request->title
+        );
+
         return response()->json([
             'message' => 'Ticket created successfully',
             'status' => 201
@@ -99,6 +107,8 @@ class SupportCenterController extends Controller
         $res['unread_for_user'] = $res->unread_for_user + 1;
         $res['unread_for_admin'] = 0;
         $res->update($data);
+
+        sendMailtoUser($res->user, 'A New Message has been sent', 'The following message has been sent by Admin for ticket ' . $res->title, $request->message, null);
         return response()->json([
             'message' => "Message Sent Successfully",
             'status' => 201,

@@ -12,7 +12,7 @@ class ArtistController extends Controller
         $res = Artist::with('user')->where(function ($q) use ($request) {
             $q->where('title', 'like', '%' . $request->q . '%')
                 ->orWhereHas('user', function ($user) use ($request) {
-                    $user->where('name', 'like', '%' . $request->q . '%');
+                    $user->where('username', 'like', '%' . $request->q . '%');
                 });
         });
         if ($request->status) $res->where('status', $request->status);

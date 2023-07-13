@@ -27,48 +27,48 @@ class DatabaseSeeder extends Seeder
 
         User::create([
             'first_name' => 'Admin',
-            'last_name' => 'Admin',
-            'username' => 'admin@example.com',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('123456'),
+            'last_name' => '',
+            'username' => 'admin',
+            'email' => 'imrul.viserx@gmail.com',
+            'password' => Hash::make('dreamrecords.in'),
             'isAdmin' => true
         ]);
 
-        User::create([
-            'first_name' => 'Imrul',
-            'last_name' => 'Afnan',
-            'username' => 'imrulafnan',
-            'email' => 'imrul@example.com',
-            'password' => Hash::make('123456'),
-            'isAdmin' => false
-        ]);
+        // User::create([
+        //     'first_name' => 'Imrul',
+        //     'last_name' => 'Afnan',
+        //     'username' => 'imrulafnan',
+        //     'email' => 'imrul@example.com',
+        //     'password' => Hash::make('123456'),
+        //     'isAdmin' => false
+        // ]);
 
-        Account::create([
-            'user_id' => 2,
-            'balance' => 0,
-        ]);
+        // Account::create([
+        //     'user_id' => 2,
+        //     'balance' => 0,
+        // ]);
 
-        Language::create(['name' => 'English']);
-        Language::create(['name' => 'Bangla']);
-        Language::create(['name' => 'Hindi']);
+        // Language::create(['name' => 'English']);
+        // Language::create(['name' => 'Bangla']);
+        // Language::create(['name' => 'Hindi']);
 
-        Genre::create(['name' => 'Indian']);
-        Genre::create(['name' => 'Tamil']);
+        // Genre::create(['name' => 'Indian']);
+        // Genre::create(['name' => 'Tamil']);
 
-        Subgenre::create(['name' => 'Indian Bangla', 'genre_id' => 1]);
-        Subgenre::create(['name' => 'South Indian', 'genre_id' => 1]);
-        Subgenre::create(['name' => 'Telegu', 'genre_id' => 2]);
-        Subgenre::create(['name' => 'Malayam', 'genre_id' => 2]);
+        // Subgenre::create(['name' => 'Indian Bangla', 'genre_id' => 1]);
+        // Subgenre::create(['name' => 'South Indian', 'genre_id' => 1]);
+        // Subgenre::create(['name' => 'Telegu', 'genre_id' => 2]);
+        // Subgenre::create(['name' => 'Malayam', 'genre_id' => 2]);
 
-        Format::create(['name' => 'Single']);
-        Format::create(['name' => 'Album']);
+        // Format::create(['name' => 'Single']);
+        // Format::create(['name' => 'Album']);
 
-        ParentalAdvisory::create(['name' => 'Yes']);
-        ParentalAdvisory::create(['name' => 'No']);
+        // ParentalAdvisory::create(['name' => 'Yes']);
+        // ParentalAdvisory::create(['name' => 'No']);
 
-        Artist::create(['title' => 'Anupam Roy', 'user_id' => 2]);
-        Artist::create(['title' => 'Subhamay Karjee', 'user_id' => 2]);
+        // Artist::create(['title' => 'Anupam Roy', 'user_id' => 2]);
+        // Artist::create(['title' => 'Subhamay Karjee', 'user_id' => 2]);
 
-        Label::create(['title' => 'Test Label', 'user_id' => 2]);
+        // Label::create(['title' => 'Test Label', 'user_id' => 2]);
     }
 }

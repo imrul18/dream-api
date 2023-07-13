@@ -71,6 +71,7 @@ class AuthController extends Controller
         $data = [];
         $data['approved'] = Audio::where('status', 3)->latest()->take(4)->get();
         $data['pending'] = Audio::where('status', 1)->latest()->take(4)->get();
+        $data['draft'] = Audio::where('status', 4)->latest()->take(4)->get();
         $res = [
             'count' => $count,
             'data' => $data,

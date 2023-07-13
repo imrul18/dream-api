@@ -11,6 +11,8 @@ use App\Models\AudioFile;
 use App\Models\AudioImage;
 use App\Models\AudioProducer;
 use App\Models\AudioRemixer;
+use App\Models\CallerTune;
+use App\Models\CallerTuneCrbt;
 use App\Models\User;
 use App\Notifications\AudioUpdate;
 use Illuminate\Http\Request;
@@ -33,6 +35,12 @@ class AudioController extends Controller
     public function show(string $id)
     {
         $data = Audio::find($id);
+
+        $caller_tune = CallerTune::where('audio_id', $id)->first();
+        if ($caller_tune) {
+            $crbts = CallerTuneCrbt::with('crbt')->where('caller_tune_id', $caller_tune->id)->get();
+            $data->crbts = $crbts;
+        }
         return response()->json($data, 200);
     }
 
@@ -42,13 +50,21 @@ class AudioController extends Controller
         $request->validate([
             'status' => 'required|in:1,2,3,4',
         ]);
-        if ($request->status == 4) {
-            $request->validate([
-                'note' => 'required',
-            ]);
+        if ($request->status == 4 && !$request->note) {
+            return response()->json([
+                'message' => 'Note is required',
+                'status' => 203,
+            ], 203);
         }
         $data = $request->only([
             'status',
+            "title",
+            "subtitle",
+            "upc",
+            "isrc",
+            "p_line",
+            "c_line",
+            "producer_catalogue_number",
             'note'
         ]);
         $res->update($data);
