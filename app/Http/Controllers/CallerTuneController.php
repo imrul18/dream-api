@@ -43,6 +43,18 @@ class CallerTuneController extends Controller
         ]);
         $res->update($data);
 
+        if ($request->is_caller_tune == 0) {
+            $header = 'Caller tune Pending';
+            $message = 'The following caller tune has been Pending';
+        } elseif ($request->is_caller_tune == 1) {
+            $header = 'Caller tune Approved';
+            $message =  'The following caller tune has been Approved';
+        } else {
+            $header = 'Caller tune Status Changed';
+            $message =  'The following caller tune status has been changed';
+        }
+        sendMailtoUser($res->user, $header, $message, $res->title, $reason ?? null);
+
         return response()->json([
             'message' => 'Approved successfully',
             'status' => 201,
@@ -65,6 +77,16 @@ class CallerTuneController extends Controller
                 'crbt_id' => $crbt_id,
             ]);
         }
+
+        $audio = Audio::find($request->id);
+
+        sendMailtoAdmin(
+            auth()->user(),
+            'Request for caller tune',
+            'The following caller tune request has been created by ' . auth()->user()->first_name . ' ' . auth()->user()->last_name . '(' . auth()->user()->username . ')',
+            $audio->title
+        );
+
         return response()->json([
             'message' => 'Apply Successfully',
             'status' => 203

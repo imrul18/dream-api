@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Analytic;
+use App\Models\Label;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 
@@ -53,6 +54,13 @@ class AnalyticsController extends Controller
 
         Analytic::create($data);
 
+        sendMailtoAdmin(
+            auth()->user(),
+            'A New Analytics Request has been created',
+            'The following Analytics request has been created by ' . auth()->user()->first_name . ' ' . auth()->user()->last_name . '(' . auth()->user()->username . ')',
+            $request->year . '-' . $request->month . '-' . Label::find($request->label_id)->title,
+        );
+
         return response()->json([
             'message' => 'Analytic created successfully',
             'status' => 201
@@ -65,6 +73,12 @@ class AnalyticsController extends Controller
         $request->validate([
             'status' => 'required',
         ]);
+
+        $header = 'Analytics status updated';
+        $message = 'The following analytics status has been Changed';
+        $title = $res->year . '-' . $res->month . '-' . Label::find($res->label_id)->title;
+        $reason = null;
+
         if ($request->status == 2) {
             $request->validate([
                 'file_url' => 'required',
@@ -84,18 +98,24 @@ class AnalyticsController extends Controller
                 $data['file_url'] = $filepath;
             }
             $res->update($data);
+            $header = 'Analytics Approved';
+            $message = 'The following analytics has been Approved';
         }
-        // if ($request->status == 3) {
-        //     $request->validate([
-        //         'reason' => 'required',
-        //     ], [], [
-        //         'reason' => 'Reason',
-        //     ]);
-        //     $data = $request->only([
-        //         'status',
-        //     ]);
-        //     $res->update($data);
-        // }
+        if ($request->status == 3) {
+            $request->validate([
+                'note' => 'required',
+            ], [], [
+                'note' => 'Note',
+            ]);
+            $data = $request->only([
+                'status',
+            ]);
+            $res->update($data);
+            $header = 'Analytics Rejected';
+            $message =  'The following analytics has been Rejected';
+            $reason = $request->note;
+        }
+        sendMailtoUser($res->user, $header, $message, $title, $reason);
 
 
         return response()->json([
