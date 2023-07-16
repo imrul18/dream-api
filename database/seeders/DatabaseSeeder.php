@@ -34,14 +34,14 @@ class DatabaseSeeder extends Seeder
             'isAdmin' => true
         ]);
 
-        // User::create([
-        //     'first_name' => 'Imrul',
-        //     'last_name' => 'Afnan',
-        //     'username' => 'imrulafnan',
-        //     'email' => 'imrul@example.com',
-        //     'password' => Hash::make('123456'),
-        //     'isAdmin' => false
-        // ]);
+        User::create([
+            'first_name' => 'Imrul',
+            'last_name' => 'Afnan',
+            'username' => 'imrulafnan',
+            'email' => 'imrul@example.com',
+            'password' => Hash::make('123456'),
+            'isAdmin' => false
+        ]);
 
         // Account::create([
         //     'user_id' => 2,

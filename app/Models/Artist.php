@@ -30,6 +30,19 @@ class Artist extends Model
         return $this->status()[$this->status];
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+        self::addGlobalScope(function ($model) {
+            if (!auth()->user()->isAdmin) {
+                $model->where('user_id', auth()->user()->id); //TODO uncomment this when auth is ready
+            } else {
+                $model->with('user');
+            }
+            return $model;
+        });
+    }
+
     public function status()
     {
         return [

@@ -29,17 +29,17 @@ class AccountController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'date' => 'required',
             'amount' => 'required|numeric',
-            'for' => 'required',
+            'for_month' => 'required',
+            'for_year' => 'required',
             'user_id' => 'required',
         ], [], [
             'user_id' => 'User',
         ]);
         $data = $request->only([
-            'date',
             'amount',
-            'for',
+            'for_month',
+            'for_year',
             'user_id'
         ]);
         $data['type'] = 'credit';
@@ -49,7 +49,7 @@ class AccountController extends Controller
 
         $header = 'Create a new payment';
         $message = 'The following payment has been created';
-        $title = 'For - ' . $request->for . ' and Amount - ' . $request->amount;
+        $title = 'For - ' . $request->for_month . '-' . $request->for_year . ' and Amount - ' . $request->amount;
         $reason = null;
         sendMailtoUser(User::find($request->user_id), $header, $message, $title, $reason);
         return response()->json([

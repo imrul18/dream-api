@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('date');
             $table->string('amount');
             $table->string('type');
-            $table->string('for')->nullable();
+            $table->string('for_year')->nullable();
+            $table->string('for_month')->nullable();
             $table->integer('bank_id')->nullable();
             $table->string('status');
             $table->string('note')->nullable();
