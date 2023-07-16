@@ -21,6 +21,7 @@ class UserController extends Controller
             'first_name' => 'required',
             'last_name' => 'required',
             'govt_id' => 'required',
+            'phone' => 'required',
             'username' => 'required|unique:users,username',
             'email' => 'required|unique:users,email',
             'password' => 'required'
@@ -28,6 +29,7 @@ class UserController extends Controller
         $data = $request->only([
             'first_name',
             'last_name',
+            'phone',
             'govt_id',
             'username',
             'email',
