@@ -16,7 +16,7 @@ class CallerTuneController extends Controller
             if (isset($request->user)) $audio = $audio->where('user_id', $request->user);
         });
         if (isset($request->status)) $data = $data->where('is_requested', $request->status);
-        $data = $data->paginate($request->get('perPage', 10));
+        $data = $data->latest()->paginate($request->get('perPage', 10));
         return response()->json($data, 200);
     }
 
@@ -25,7 +25,7 @@ class CallerTuneController extends Controller
         $data = CallerTune::whereHas('audio', function ($audio) use ($request) {
             $audio->where('title', 'like', '%' . $request->q . '%');
         });
-        $data = $data->paginate($request->get('perPage', 1000));
+        $data = $data->latest()->paginate($request->get('perPage', 1000));
         return response()->json($data, 200);
     }
 

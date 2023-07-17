@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Audio;
 use App\Models\DatabaseNotification;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Notifications\Notification;
 use Illuminate\Http\Request;
@@ -23,7 +24,9 @@ class AuthController extends Controller
             'message' => 'username/Email can not be Empty',
             'status' => 203
         ], 203);
-        $user = User::where('email', $request->email)->orWhere('username', $request->email)->first();
+        $user = User::where('isAdmin', false)->filter(function ($item) use ($request) {
+            return $item['email'] == $request->email || $item['username'] == $request->email;
+        })->first();
         if (!$user) return response()->json([
             'message' => 'User not found',
             'status' => 203,
@@ -43,7 +46,9 @@ class AuthController extends Controller
             'email' => 'required',
             'password' => 'required',
         ]);
-        $user = User::where('email', $request->email)->where('isAdmin', true)->first();
+        $user = User::where('isAdmin', true)->where(function ($item) use ($request) {
+            $item->where('email', $request->email)->orWhere('username', $request->email);
+        })->first();
         if (!$user) return response()->json([
             'message' => 'User not found',
             'status' => 203,
@@ -59,7 +64,12 @@ class AuthController extends Controller
     public function notification()
     {
         $notifications = DatabaseNotification::where('notifiable_id', auth()->user()->id)->latest()->take(5)->get()->pluck('data');
-        return response()->json($notifications, 200);
+        $settings = Setting::first();
+        return response()->json([
+            'notifications' => $notifications,
+            'settings' => $settings,
+            'status' => 200,
+        ], 200);
     }
 
     public function dashboard()

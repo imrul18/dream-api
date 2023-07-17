@@ -21,7 +21,7 @@ class AccountController extends Controller
         }
         if (isset($request->status)) $data = $data->where('status', $request->status);
         if (isset($request->user)) $data = $data->where('user_id', $request->user);
-        $data = $data->paginate($request->get('perPage', 10));
+        $data = $data->latest()->paginate($request->get('perPage', 10));
 
         return response()->json($data, 200);
     }
@@ -157,7 +157,7 @@ class AccountController extends Controller
         if (isset($request->year)) {
             $transaction = $transaction->whereYear('date', $request->year);
         }
-        $transaction = $transaction->paginate(1000);
+        $transaction = $transaction->latest()->paginate(1000);
         return response()->json([
             'transaction' => $transaction,
         ], 200);

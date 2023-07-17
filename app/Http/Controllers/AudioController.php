@@ -27,7 +27,7 @@ class AudioController extends Controller
         if (isset($request->status)) $data = $data->where('status', $request->status);
         if (isset($request->user)) $data = $data->where('user_id', $request->user);
         if (isset($request->is_caller_tune)) $data = $data->where('is_caller_tune', $request->is_caller_tune);
-        $data = $data->paginate($request->get('perPage', 10));
+        $data = $data->latest()->paginate($request->get('perPage', 10));
 
         return response()->json($data, 200);
     }

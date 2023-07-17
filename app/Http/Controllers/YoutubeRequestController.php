@@ -24,7 +24,7 @@ class YoutubeRequestController extends Controller
                 if ($type == 3) $data = $data->where('artist_upc1', 'like', '%' . $request->q . '%');
             }
 
-            $data = $data->paginate($request->get('perPage', 10));
+            $data = $data->latest()->paginate($request->get('perPage', 10));
         }
         return response()->json($data, 200);
     }

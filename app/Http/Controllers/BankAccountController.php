@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Account;
 use App\Models\BankAccount;
+use App\Models\Setting;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 
@@ -13,8 +14,8 @@ class BankAccountController extends Controller
     {
         $banks = BankAccount::get();
         $balance = Account::where('user_id', auth()->user()->id)->first();
-        $transaction = Transaction::where('type', 'debit')->paginate(1000);
-        $minimum = 300;
+        $transaction = Transaction::where('type', 'debit')->latest()->paginate(1000);
+        $minimum = Setting::first()->min_withdraw;
         return response()->json([
             'banks' => $banks,
             'balance' => $balance,

@@ -11,7 +11,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $res = User::where('isAdmin', false)->where('first_name', 'like', '%' . $request->q . '%')->orWhere('last_name', 'like', '%' . $request->q . '%')->orWhere('govt_id', 'like', '%' . $request->q . '%')->orWhere('username', 'like', '%' . $request->q . '%')->orWhere('email', 'like', '%' . $request->q . '%')->paginate($request->get('perPage', 10));
+        $res = User::where('isAdmin', false)->where('first_name', 'like', '%' . $request->q . '%')->orWhere('last_name', 'like', '%' . $request->q . '%')->orWhere('govt_id', 'like', '%' . $request->q . '%')->orWhere('username', 'like', '%' . $request->q . '%')->orWhere('email', 'like', '%' . $request->q . '%')->latest()->paginate($request->get('perPage', 10));
         return response()->json($res, 200);
     }
 

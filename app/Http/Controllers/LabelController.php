@@ -19,7 +19,7 @@ class LabelController extends Controller
         if ($request->status) $res->where('status', $request->status);
         if ($request->user) $res->where('user_id', $request->user);
 
-        $res = $res->paginate($request->get('perPage', 10));
+        $res = $res->latest()->paginate($request->get('perPage', 10));
         return response()->json($res, 200);
     }
 
@@ -71,7 +71,7 @@ class LabelController extends Controller
         $res = Label::where('title', 'like', '%' . $request->q . '%');
         if ($request->requested) $res->where('status', $request->requested);
         // $res = $res->get();
-        $res = $res->paginate($request->get('perPage', 1000));
+        $res = $res->latest()->paginate($request->get('perPage', 1000));
         return response()->json($res, 200);
     }
 

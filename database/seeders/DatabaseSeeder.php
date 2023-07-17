@@ -11,6 +11,7 @@ use App\Models\Genre;
 use App\Models\Label;
 use App\Models\Language;
 use App\Models\ParentalAdvisory;
+use App\Models\Setting;
 use App\Models\Subgenre;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -29,18 +30,14 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'Admin',
             'last_name' => '',
             'username' => 'admin',
-            'email' => 'imrul.viserx@gmail.com',
+            'email' => 'mail.dreamrecords@gmail.com',
             'password' => Hash::make('dreamrecords.in'),
             'isAdmin' => true
         ]);
 
-        User::create([
-            'first_name' => 'Imrul',
-            'last_name' => 'Afnan',
-            'username' => 'imrulafnan',
-            'email' => 'imrul@example.com',
-            'password' => Hash::make('123456'),
-            'isAdmin' => false
+        Setting::create([
+            'whatsapp' => '01677756337',
+            'min_withdraw' => 300
         ]);
 
         // Account::create([

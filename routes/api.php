@@ -14,6 +14,7 @@ use App\Http\Controllers\LabelController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\OptionController;
 use App\Http\Controllers\ParentalAdvisoryController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SubGenreController;
 use App\Http\Controllers\SupportCenterController;
 use App\Http\Controllers\UserController;
@@ -156,6 +157,9 @@ Route::middleware('auth:sanctum')->group(function () {
                     Route::post('/{id}', 'update');
                 });
             });
+
+            Route::get('settings', [SettingController::class, 'index']);
+            Route::post('settings', [SettingController::class, 'update']);
         });
     });
 
