@@ -46,7 +46,9 @@ class AuthController extends Controller
             'email' => 'required',
             'password' => 'required',
         ]);
-        $user = User::where('email', $request->email)->orWhere('username', $request->email)->where('isAdmin', true)->first();
+        $user = User::where('isAdmin', true)->where(function ($item) use ($request) {
+            $item->where('email', $request->email)->orWhere('username', $request->email);
+        })->first();
         if (!$user) return response()->json([
             'message' => 'User not found',
             'status' => 203,
