@@ -9,7 +9,7 @@ class SubGenreController extends Controller
 {
     public function index(Request $request)
     {
-        $res = Subgenre::with('genre')->where('name', 'like', '%' . $request->q . '%')->paginate($request->get('perPage', 10));
+        $res = Subgenre::with('genre')->where('name', 'like', '%' . $request->q . '%')->latest()->paginate($request->get('perPage', 10));
         return response()->json($res, 200);
     }
 

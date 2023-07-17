@@ -13,14 +13,14 @@ class SupportCenterController extends Controller
         $data = SupportTicket::where('title', 'like', '%' . $request->q . '%');
         if (isset($request->status)) $data = $data->where('status', $request->status);
         if (isset($request->user)) $data = $data->where('user_id', $request->user);
-        $data = $data->paginate($request->get('perPage', 10));
+        $data = $data->latest()->paginate($request->get('perPage', 10));
         return response()->json($data, 200);
     }
 
     public function userIndex(Request $request)
     {
         $data = SupportTicket::where('title', 'like', '%' . $request->q . '%');
-        $data = $data->paginate($request->get('perPage', 1000));
+        $data = $data->latest()->paginate($request->get('perPage', 1000));
         return response()->json($data, 200);
     }
 
@@ -81,12 +81,21 @@ class SupportCenterController extends Controller
         ], 201);
     }
 
-    public function sms(string $id)
+    public function sms(Request $request, string $id)
     {
         $res = SupportTicket::find($id);
         $res['unread_for_user'] = 0;
         $res->save();
-        $sms = SupportMessage::where('support_ticket_id', $id)->get();
+        $sms = [];
+        $data = SupportMessage::where('support_ticket_id', $id)->get();
+        if (!isset($request->type) || $request->type != 'all') {
+            $data = $data->take(-4);
+            foreach ($data as $key => $value) {
+                $sms[] = $value;
+            }
+        } else {
+            $sms = $data;
+        }
         return response()->json($sms, 200);
     }
 

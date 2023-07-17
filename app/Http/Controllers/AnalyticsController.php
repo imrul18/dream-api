@@ -17,7 +17,7 @@ class AnalyticsController extends Controller
         if (isset($request->q)) $data = $data->where('year', 'like', '%' . $request->q . '%')->orWhere('month', 'like', '%' . $request->q . '%');
         if (isset($request->user)) $data = $data->where('user_id', $request->user);
         if (isset($request->status)) $data = $data->where('status', $request->status);
-        $data = $data->paginate($request->get('perPage', 10));
+        $data = $data->latest()->paginate($request->get('perPage', 10));
 
         return response()->json($data, 200);
     }
@@ -30,7 +30,7 @@ class AnalyticsController extends Controller
         if (isset($request->q)) $data = $data->where('year', 'like', '%' . $request->q . '%')->orWhere('month', 'like', '%' . $request->q . '%');
         if (isset($request->user)) $data = $data->where('user_id', $request->user);
         if (isset($request->status)) $data = $data->where('status', $request->status);
-        $data = $data->paginate($request->get('perPage', 1000));
+        $data = $data->latest()->paginate($request->get('perPage', 1000));
 
         return response()->json($data, 200);
     }

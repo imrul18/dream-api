@@ -9,7 +9,7 @@ class CRBTController extends Controller
 {
     public function index(Request $request)
     {
-        $res = Crbt::where('title', 'like', '%' . $request->q . '%')->paginate($request->get('perPage', 10));
+        $res = Crbt::where('title', 'like', '%' . $request->q . '%')->latest()->paginate($request->get('perPage', 10));
         return response()->json($res, 200);
     }
 

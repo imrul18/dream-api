@@ -9,7 +9,7 @@ class GenreController extends Controller
 {
     public function index(Request $request)
     {
-        $res = Genre::where('name', 'like', '%' . $request->q . '%')->paginate($request->get('perPage', 10));
+        $res = Genre::where('name', 'like', '%' . $request->q . '%')->latest()->paginate($request->get('perPage', 10));
         return response()->json($res, 200);
     }
 

@@ -17,7 +17,7 @@ class ArtistController extends Controller
         });
         if ($request->status) $res->where('status', $request->status);
         if ($request->user) $res->where('user_id', $request->user);
-        $res = $res->paginate($request->get('perPage', 10));
+        $res = $res->latest()->paginate($request->get('perPage', 10));
         return response()->json($res, 200);
     }
 
@@ -70,7 +70,7 @@ class ArtistController extends Controller
     //for user
     public function userIndex(Request $request)
     {
-        $res = Artist::where('title', 'like', '%' . $request->q . '%')->paginate($request->get('perPage', 1000));
+        $res = Artist::where('title', 'like', '%' . $request->q . '%')->latest()->paginate($request->get('perPage', 1000));
         return response()->json($res, 200);
     }
     public function userStore(Request $request)
