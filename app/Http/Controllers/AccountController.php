@@ -69,12 +69,12 @@ class AccountController extends Controller
         $title = 'For - ' . $request->for_month . '-' . $request->for_year . ' and Amount - ' . $request->amount;
         $reason = null;
 
-        if ($request->status != "Rejected" || $request->status != "Approved") {
+        if (($res->status == "Rejected" || $res->status == "Approved") && $request->status == "Pending") {
             return response()->json([
                 'message' => 'Can not change status to Pending',
                 'status' => 203,
             ], 203);
-        } elseif ($request->status == 'credit') {
+        } elseif ($request->type == 'credit') {
             if ($request->status == "Rejected") {
                 $data = $request->only([
                     'status',
@@ -101,7 +101,7 @@ class AccountController extends Controller
                 }
                 $res->update($data);
             }
-        } elseif ($request->status == 'debit') {
+        } elseif ($request->type == 'debit') {
             if ($request->status == "Approved") {
                 $request->validate([
                     'file_url' => 'required',
