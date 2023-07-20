@@ -2,7 +2,7 @@ APP_NAME=DreamRecords
 APP_ENV=local
 APP_KEY=base64:FH6xkvmgdxtACVtvYOx4KNSHfKNX0266EKP4fKb2c7o=
 APP_DEBUG=true
-APP_URL=http://localhost
+APP_URL=https://api.dreamrecords.in/
 
 LOG_CHANNEL=stack
 LOG_DEPRECATIONS_CHANNEL=null

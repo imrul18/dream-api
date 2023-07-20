@@ -6,9 +6,7 @@ use App\Models\Audio;
 use App\Models\DatabaseNotification;
 use App\Models\Setting;
 use App\Models\User;
-use Illuminate\Notifications\Notification;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 
@@ -16,10 +14,6 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        // $request->validate([
-        //     'email' => 'required',
-        //     'password' => 'required',
-        // ]);
         if (!isset($request->email)) return response()->json([
             'message' => 'username/Email can not be Empty',
             'status' => 203
