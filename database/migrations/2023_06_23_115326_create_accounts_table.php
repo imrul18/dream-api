@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id');
-            $table->integer('balance');
+            $table->float('balance');
             $table->timestamps();
         });
     }

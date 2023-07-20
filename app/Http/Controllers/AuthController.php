@@ -24,8 +24,8 @@ class AuthController extends Controller
             'message' => 'username/Email can not be Empty',
             'status' => 203
         ], 203);
-        $user = User::where('isAdmin', false)->filter(function ($item) use ($request) {
-            return $item['email'] == $request->email || $item['username'] == $request->email;
+        $user = User::where('isAdmin', true)->where(function ($item) use ($request) {
+            $item->where('email', $request->email)->orWhere('username', $request->email);
         })->first();
         if (!$user) return response()->json([
             'message' => 'User not found',

@@ -66,73 +66,81 @@ class AccountController extends Controller
         ]);
         $header = 'Withdraw status updated';
         $message = 'The following Withdraw status has been Changed';
-        $title = 'Amount - ' . $res->amount;
+        $title = 'For - ' . $request->for_month . '-' . $request->for_year . ' and Amount - ' . $request->amount;
         $reason = null;
 
-        if ($res->status == "Rejected") {
+        if ($request->status != "Rejected" || $request->status != "Approved") {
             return response()->json([
-                'message' => 'Transaction already rejected',
+                'message' => 'Can not change status to Pending',
                 'status' => 203,
             ], 203);
-        } elseif ($res->status == "Approved") {
-            return response()->json([
-                'message' => 'Transaction already approved',
-                'status' => 203,
-            ], 203);
-        } elseif ($request->status == 'credit' && $request->status == "Rejected") {
-            $data = $request->only([
-                'status',
-            ]);
-            $res->update($data);
-            // Account::where('user_id', $res->user_id)->decrement('balance', (int)$res->amount);
-        } elseif ($request->status == 'credit' && $request->status == "Approved") {
-            $data = $request->only([
-                'status',
-            ]);
-            Account::where('user_id', $res->user_id)->increment('balance', (int)$res->amount);
-            $res->update($data);
-            $header = 'Create a new payment';
-            $message = 'The following payment has been created';
-            $title = 'For - ' . $request->for_month . '-' . $request->for_year . ' and Amount - ' . $request->amount;
-            $reason = null;
-            sendMailtoUser(User::find($res->user_id), $header, $message, $title, $reason);
-            // Account::where('user_id', $res->user_id)->decrement('balance', (int)$res->amount);
-        } elseif ($request->status == 'debit' && $request->status == "Approved") {
-            $request->validate([
-                'file_url' => 'required',
-            ], [], [
-                'file_url' => 'File',
-            ]);
-            $data = $request->only([
-                'status',
-            ]);
-            File::makeDirectory(public_path('uploads/withdraw'), 0777, true, true);
-            if ($request->hasFile('file_url')) {
-                $file = $request->file('file_url');
-                $filename = random_int(100000, 999999) . '_' . $request->project_id . '_' . $file->getClientOriginalName();
-                $location = 'uploads/withdraw';
-                $file->move($location, $filename);
-                $filepath = $location . "/" . $filename;
-                $data['file_url'] = $filepath;
+        } elseif ($request->status == 'credit') {
+            if ($request->status == "Rejected") {
+                $data = $request->only([
+                    'status',
+                ]);
+                if ($res->status == "Approved") {
+                    Account::where('user_id', $res->user_id)->decrement('balance', $res->amount);
+                    $header = 'Cancel a previous payment';
+                    $message = 'The following payment has been calceled';
+                    $reason = null;
+                }
+                $res->update($data);
+            } elseif ($request->status == "Approved") {
+                $data = $request->only([
+                    'status',
+                ]);
+                Account::where('user_id', $res->user_id)->increment('balance', $res->amount);
+                $header = 'Create a new payment';
+                $message = 'The following payment has been created';
+                $reason = null;
+                if ($res->status == "Rejected") {
+                    $header = 'Update a previous payment';
+                    $message = 'The following payment has been updated';
+                    $reason = null;
+                }
+                $res->update($data);
             }
-            // Account::where('user_id', $res->user_id)->decrement('balance', (int)$res->amount);
-            $res->update($data);
-            $header = 'Withdraw request Approved';
-            $message = 'The following withdraw request has been Approved';
-        } elseif ($request->status == 'debit' && $request->status == "Rejected") {
-            $request->validate([
-                'note' => 'required',
-            ], [], [
-                'note' => 'Note',
-            ]);
-            $data = $request->only([
-                'status',
-            ]);
-            Account::where('user_id', $res->user_id)->increment('balance', (int)$res->amount);
-            $res->update($data);
-            $header = 'Withdraw request Rejected';
-            $message =  'The following withdraw request has been Rejected';
-            $reason = $request->note;
+        } elseif ($request->status == 'debit') {
+            if ($request->status == "Approved") {
+                $request->validate([
+                    'file_url' => 'required',
+                ], [], [
+                    'file_url' => 'File',
+                ]);
+                $data = $request->only([
+                    'status',
+                ]);
+                File::makeDirectory(public_path('uploads/withdraw'), 0777, true, true);
+                if ($request->hasFile('file_url')) {
+                    $file = $request->file('file_url');
+                    $filename = random_int(100000, 999999) . '_' . $request->project_id . '_' . $file->getClientOriginalName();
+                    $location = 'uploads/withdraw';
+                    $file->move($location, $filename);
+                    $filepath = $location . "/" . $filename;
+                    $data['file_url'] = $filepath;
+                }
+                if ($res->status == "Rejected") {
+                    Account::where('user_id', $res->user_id)->decrement('balance', $res->amount);
+                }
+                $res->update($data);
+                $header = 'Withdraw request Approved';
+                $message = 'The following withdraw request has been Approved';
+            } elseif ($request->status == "Rejected") {
+                $request->validate([
+                    'note' => 'required',
+                ], [], [
+                    'note' => 'Note',
+                ]);
+                $data = $request->only([
+                    'status',
+                ]);
+                Account::where('user_id', $res->user_id)->increment('balance', $res->amount);
+                $res->update($data);
+                $header = 'Withdraw request Rejected';
+                $message =  'The following withdraw request has been Rejected';
+                $reason = $request->note;
+            }
         }
         sendMailtoUser($res->user, $header, $message, $title, $reason);
 
@@ -154,7 +162,6 @@ class AccountController extends Controller
             'status' => 'Pending',
         ]);
         Account::where('user_id', auth()->user()->id)->decrement('balance', $request->amount);
-
         sendMailtoAdmin(
             auth()->user(),
             'Create a New Windraw Request',
@@ -170,7 +177,7 @@ class AccountController extends Controller
 
     public function overview(Request $request)
     {
-        $transaction = Transaction::where('type', 'credit');
+        $transaction = Transaction::where('type', 'credit')->where('status', 'Approved');
         if (isset($request->year)) {
             $transaction = $transaction->whereYear('date', $request->year);
         }
