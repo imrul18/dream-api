@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->integer('user_id');
             $table->string('date')->default(Carbon::now());
-            $table->string('amount');
+            $table->float('amount');
             $table->string('type');
             $table->string('for_year')->nullable();
             $table->string('for_month')->nullable();
