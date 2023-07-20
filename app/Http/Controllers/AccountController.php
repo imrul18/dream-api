@@ -43,15 +43,15 @@ class AccountController extends Controller
             'user_id'
         ]);
         $data['type'] = 'credit';
-        $data['status'] = 'Approved';
+        $data['status'] = 'Pending';
         Transaction::create($data);
-        Account::where('user_id', $request->user_id)->increment('balance', (int)$request->amount);
+        // Account::where('user_id', $request->user_id)->increment('balance', (int)$request->amount);
 
-        $header = 'Create a new payment';
-        $message = 'The following payment has been created';
-        $title = 'For - ' . $request->for_month . '-' . $request->for_year . ' and Amount - ' . $request->amount;
-        $reason = null;
-        sendMailtoUser(User::find($request->user_id), $header, $message, $title, $reason);
+        // $header = 'Create a new payment';
+        // $message = 'The following payment has been created';
+        // $title = 'For - ' . $request->for_month . '-' . $request->for_year . ' and Amount - ' . $request->amount;
+        // $reason = null;
+        // sendMailtoUser(User::find($request->user_id), $header, $message, $title, $reason);
         return response()->json([
             'message' => 'Audio created successfully',
             'status' => 201
@@ -69,18 +69,35 @@ class AccountController extends Controller
         $title = 'Amount - ' . $res->amount;
         $reason = null;
 
-        // if ($res->status == "Rejected") {
-        //     return response()->json([
-        //         'message' => 'Transaction already rejected',
-        //         'status' => 203,
-        //     ], 203);
-        // }
-
-        $res->update($request->only([
-            'status',
-        ]));
-
-        if ($request->status == "Approved") {
+        if ($res->status == "Rejected") {
+            return response()->json([
+                'message' => 'Transaction already rejected',
+                'status' => 203,
+            ], 203);
+        } elseif ($res->status == "Approved") {
+            return response()->json([
+                'message' => 'Transaction already approved',
+                'status' => 203,
+            ], 203);
+        } elseif ($request->status == 'credit' && $request->status == "Rejected") {
+            $data = $request->only([
+                'status',
+            ]);
+            $res->update($data);
+            // Account::where('user_id', $res->user_id)->decrement('balance', (int)$res->amount);
+        } elseif ($request->status == 'credit' && $request->status == "Approved") {
+            $data = $request->only([
+                'status',
+            ]);
+            Account::where('user_id', $res->user_id)->increment('balance', (int)$res->amount);
+            $res->update($data);
+            $header = 'Create a new payment';
+            $message = 'The following payment has been created';
+            $title = 'For - ' . $request->for_month . '-' . $request->for_year . ' and Amount - ' . $request->amount;
+            $reason = null;
+            sendMailtoUser(User::find($res->user_id), $header, $message, $title, $reason);
+            // Account::where('user_id', $res->user_id)->decrement('balance', (int)$res->amount);
+        } elseif ($request->status == 'debit' && $request->status == "Approved") {
             $request->validate([
                 'file_url' => 'required',
             ], [], [
@@ -98,11 +115,11 @@ class AccountController extends Controller
                 $filepath = $location . "/" . $filename;
                 $data['file_url'] = $filepath;
             }
+            // Account::where('user_id', $res->user_id)->decrement('balance', (int)$res->amount);
             $res->update($data);
             $header = 'Withdraw request Approved';
             $message = 'The following withdraw request has been Approved';
-        } elseif ($request->status == "Rejected") {
-
+        } elseif ($request->status == 'debit' && $request->status == "Rejected") {
             $request->validate([
                 'note' => 'required',
             ], [], [
@@ -111,8 +128,8 @@ class AccountController extends Controller
             $data = $request->only([
                 'status',
             ]);
+            Account::where('user_id', $res->user_id)->increment('balance', (int)$res->amount);
             $res->update($data);
-            Account::where('user_id', $res->user_id)->increment('balance', (int)$request->amount);
             $header = 'Withdraw request Rejected';
             $message =  'The following withdraw request has been Rejected';
             $reason = $request->note;
